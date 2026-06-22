@@ -13,9 +13,17 @@
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .section-title { font-size: 1.5rem; color: #4a6fa5; margin-bottom: 20px; border-left: 5px solid #166088; padding-left: 10px; }
         .productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); border: 1px solid #e1e8ed; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease; }
+        
+        /* Modificaciones en la Tarjeta para arreglar las imágenes recortadas */
+        .card { background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); border: 1px solid #e1e8ed; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.2s ease; }
         .card:hover { transform: translateY(-5px); }
-        .badge { align-self: flex-start; background-color: #e8f0fe; color: #1a73e8; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
+        
+        /* ACÁ ESTÁ EL ARREGLO DE LA IMAGEN (object-fit: contain) */
+        .card-img { width: 100%; height: 220px; object-fit: contain; padding: 15px; background-color: white; border-bottom: 1px solid #f0f0f0; }
+        
+        .card-body { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        
+        .badge { align-self: flex-start; background-color: #e8f0fe; color: #1a73e8; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; display: inline-block; }
         .card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #2c3e50; }
         .especie { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
         .precio { font-size: 1.6rem; font-weight: bold; color: #2ecc71; margin-bottom: 15px; }
@@ -66,11 +74,13 @@
         <div class="productos-grid" id="contenedor-catalogo"></div>
     </div>
 
+    <!-- Botón flotante para abrir el carrito -->
     <div class="carrito-container" onclick="abrirModalCarrito()">
         <span>🛒 Mi Carrito</span>
         <span class="carrito-badge" id="contador-carrito">0</span>
     </div>
 
+    <!-- Modal 1: Selector de Especie -->
     <div class="modal-overlay" id="modal-especie">
         <div class="modal-content" style="text-align: center;">
             <button class="btn-cerrar" onclick="cerrarModal('modal-especie')">×</button>
@@ -83,29 +93,27 @@
         </div>
     </div>
 
+    <!-- Modal 2: Carrito de Compras -->
     <div class="modal-overlay" id="modal-carrito">
         <div class="modal-content">
             <button class="btn-cerrar" onclick="cerrarModal('modal-carrito')">×</button>
             <h2 style="margin-bottom: 20px; color: #2c3e50;">Resumen de tu pedido</h2>
-            
             <div id="contenido-carrito"></div>
-            
             <div class="total-container">
                 Total a pagar: $<span id="total-precio">0.00</span>
             </div>
-            
             <button class="btn-proceder" id="btn-comprar" onclick="abrirModalPago()" style="display:none;">
                 Comprar Ahora
             </button>
         </div>
     </div>
 
+    <!-- Modal 3: Pasarela de Pagos -->
     <div class="modal-overlay" id="modal-pago">
         <div class="modal-content">
             <button class="btn-cerrar" onclick="cerrarModal('modal-pago')">×</button>
             <h2 style="margin-bottom: 10px; color: #2c3e50;">Finalizar Compra</h2>
             <p>Seleccioná tu método de pago para abonar <strong>$<span id="total-pago-final">0.00</span></strong></p>
-            
             <div class="opciones-pago">
                 <button class="btn-pago btn-mp" onclick="procesarPago('Mercado Pago')">💳 Mercado Pago</button>
                 <button class="btn-pago btn-visa" onclick="procesarPago('Visa')">💳 Tarjeta Visa</button>
@@ -115,19 +123,19 @@
     </div>
 
     <script>
-        // --- 1. ESTRUCTURA PRINCIPAL DEL REGISTRO (CON NUEVOS PRODUCTOS) ---
+        // --- 1. ESTRUCTURA PRINCIPAL DEL REGISTRO (CON IMÁGENES LOCALES) ---
         const inventarioPetMatch = [
-            { codigo_articulo: 401, nombre_articulo: "Alimento Balanceado Premium (15 Kg)", categoria_articulo: "Alimentos", precio_unitario: 28500.00, stock_disponible: 34, requiere_turno: false, especie_mascota: "Universal" },
-            { codigo_articulo: 402, nombre_articulo: "Servicio de Peluquería y Baño Canino", categoria_articulo: "Servicios", precio_unitario: 9500.00, stock_disponible: 12, requiere_turno: true, especie_mascota: "Perro" },
-            { codigo_articulo: 403, nombre_articulo: "Rascador Torre de 3 Niveles", categoria_articulo: "Accesorios", precio_unitario: 31200.50, stock_disponible: 8, requiere_turno: false, especie_mascota: "Gato" },
-            { codigo_articulo: 404, nombre_articulo: "Paseo Recreativo Grupal (1 Hora)", categoria_articulo: "Servicios", precio_unitario: 4000.00, stock_disponible: 50, requiere_turno: true, especie_mascota: "Universal" },
-            { codigo_articulo: 405, nombre_articulo: "Cepillo Deslanador Ergonómico", categoria_articulo: "Accesorios", precio_unitario: 6500.00, stock_disponible: 20, requiere_turno: false, especie_mascota: "Universal" },
-            { codigo_articulo: 406, nombre_articulo: "Buzo de Invierno Ajustable", categoria_articulo: "Ropa", precio_unitario: 15000.00, stock_disponible: 15, requiere_turno: false, especie_mascota: "Universal" }
+            { codigo_articulo: 401, nombre_articulo: "Alimento Balanceado Premium (15 Kg)", categoria_articulo: "Alimentos", precio_unitario: 28500.00, stock_disponible: 34, requiere_turno: false, especie_mascota: "Universal", imagen: "Alimento.avif" },
+            { codigo_articulo: 402, nombre_articulo: "Servicio de Peluquería y Baño Canino", categoria_articulo: "Servicios", precio_unitario: 9500.00, stock_disponible: 12, requiere_turno: true, especie_mascota: "Perro", imagen: "Baño.jpg" },
+            { codigo_articulo: 403, nombre_articulo: "Rascador Torre de 3 Niveles", categoria_articulo: "Accesorios", precio_unitario: 31200.50, stock_disponible: 8, requiere_turno: false, especie_mascota: "Gato", imagen: "Rascador.webp" },
+            { codigo_articulo: 404, nombre_articulo: "Paseo Recreativo Grupal (1 Hora)", categoria_articulo: "Servicios", precio_unitario: 4000.00, stock_disponible: 50, requiere_turno: true, especie_mascota: "Universal", imagen: "Paseo.jpg" },
+            { codigo_articulo: 405, nombre_articulo: "Cepillo Deslanador Ergonómico", categoria_articulo: "Accesorios", precio_unitario: 6500.00, stock_disponible: 20, requiere_turno: false, especie_mascota: "Universal", imagen: "deslanador-para-mascotas.webp" },
+            { codigo_articulo: 406, nombre_articulo: "Buzo de Invierno Ajustable", categoria_articulo: "Ropa", precio_unitario: 15000.00, stock_disponible: 15, requiere_turno: false, especie_mascota: "Universal", imagen: "Buzos.webp" }
         ];
 
         // --- 2. LÓGICA DEL CARRITO DINÁMICO ---
         let carrito = [];
-        let articuloPendienteUniversal = null; // Variable para pausar la acción si es Universal
+        let articuloPendienteUniversal = null;
 
         function inicializarCatalogo() {
             const grid = document.getElementById('contenedor-catalogo');
@@ -136,21 +144,22 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 const textoBoton = articulo.requiere_turno ? "📅 Reservar Turno" : "🛒 Añadir al Carrito";
-                
-                // Si es universal le damos un color distinto para que resalte
                 const colorEspecie = articulo.especie_mascota === "Universal" ? "#e67e22" : "#7f8c8d";
                 
                 card.innerHTML = `
-                    <div>
-                        <span class="badge">${articulo.categoria_articulo}</span>
-                        <h3>${articulo.nombre_articulo}</h3>
-                        <p class="especie" style="color: ${colorEspecie}">Mascota destino: ${articulo.especie_mascota}</p>
-                    </div>
-                    <div>
-                        <div class="precio">$${articulo.precio_unitario.toFixed(2)}</div>
-                        <button class="btn-accion" onclick="iniciarAgregado(${articulo.codigo_articulo})">
-                            ${textoBoton}
-                        </button>
+                    <img src="${articulo.imagen}" alt="${articulo.nombre_articulo}" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18e1d5e6a9f%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18e1d5e6a9f%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2266.9609375%22%20y%3D%22104.5%22%3EImagen%20no%20encontrada%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E';">
+                    <div class="card-body">
+                        <div>
+                            <span class="badge">${articulo.categoria_articulo}</span>
+                            <h3>${articulo.nombre_articulo}</h3>
+                            <p class="especie" style="color: ${colorEspecie}">Mascota destino: ${articulo.especie_mascota}</p>
+                        </div>
+                        <div>
+                            <div class="precio">$${articulo.precio_unitario.toFixed(2)}</div>
+                            <button class="btn-accion" onclick="iniciarAgregado(${articulo.codigo_articulo})">
+                                ${textoBoton}
+                            </button>
+                        </div>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -161,31 +170,25 @@
             const articuloBase = inventarioPetMatch.find(item => item.codigo_articulo === codigoBuscar);
             
             if (articuloBase) {
-                // CONDICIONAL LOGICO: Si es universal, frenamos todo y abrimos la ventana de pregunta
                 if (articuloBase.especie_mascota === "Universal") {
                     articuloPendienteUniversal = articuloBase;
                     document.getElementById('modal-especie').style.display = 'flex';
                 } else {
-                    // Si ya tiene una mascota definida (Perro o Gato), lo agregamos directo
                     procesarIngresoAlCarrito(articuloBase, articuloBase.especie_mascota);
                 }
             }
         }
 
         function seleccionarEspecie(especieElegida) {
-            // Esta función se ejecuta al hacer clic en los botones de "Perro" o "Gato" del modal
             if (articuloPendienteUniversal) {
                 procesarIngresoAlCarrito(articuloPendienteUniversal, especieElegida);
                 cerrarModal('modal-especie');
-                articuloPendienteUniversal = null; // Limpiamos la variable
+                articuloPendienteUniversal = null;
             }
         }
 
         function procesarIngresoAlCarrito(articuloBase, especieSeleccionada) {
-            // Creamos un ID único en el carrito combinando el código numérico y la especie.
-            // Así, si compra un "Cepillo (Perro)" y un "Cepillo (Gato)", no se mezclan.
             const idUnicoCarrito = articuloBase.codigo_articulo + "_" + especieSeleccionada;
-            
             const itemEnCarrito = carrito.find(item => item.id_carrito === idUnicoCarrito);
             
             if (itemEnCarrito) {
@@ -198,8 +201,7 @@
             } else {
                 carrito.push({
                     id_carrito: idUnicoCarrito,
-                    codigo_articulo: articuloBase.codigo_articulo, // Guardamos la PK original para verificar stock
-                    // Le agregamos al nombre la etiqueta de para quién es
+                    codigo_articulo: articuloBase.codigo_articulo,
                     nombre_articulo: articuloBase.nombre_articulo + ` (Para ${especieSeleccionada})`,
                     precio_unitario: articuloBase.precio_unitario,
                     cantidad: 1,
@@ -212,7 +214,6 @@
         function modificarCantidad(idCarrito, operacion) {
             const index = carrito.findIndex(item => item.id_carrito === idCarrito);
             if (index !== -1) {
-                // Buscamos el artículo original usando la PK para saber cuánto stock real hay
                 const pkOriginal = carrito[index].codigo_articulo;
                 const articuloBase = inventarioPetMatch.find(item => item.codigo_articulo === pkOriginal);
                 
@@ -289,7 +290,7 @@
         function cerrarModal(idModal) {
             document.getElementById(idModal).style.display = 'none';
             if (idModal === 'modal-especie') {
-                articuloPendienteUniversal = null; // Limpiamos por si cancela la selección
+                articuloPendienteUniversal = null; 
             }
         }
 
