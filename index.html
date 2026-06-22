@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetMatch - E-Commerce de Mascotas</title>
+    <title>LovePets - E-Commerce de Mascotas</title>
     <style>
         /* --- ESTILOS GENERALES Y DEL CATÁLOGO --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fb; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fb; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
         header { background-color: #4a6fa5; color: white; padding: 25px 20px; text-align: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
         header h1 { font-size: 2.2rem; margin-bottom: 5px; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .section-title { font-size: 1.5rem; color: #4a6fa5; margin-bottom: 20px; border-left: 5px solid #166088; padding-left: 10px; }
-        .productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; flex-grow: 1; width: 100%; }
+        .section-title { font-size: 1.5rem; color: #4a6fa5; margin-bottom: 20px; border-left: 5px solid #166088; padding-left: 10px; text-align: center; }
         
-        /* Modificaciones en la Tarjeta para arreglar las imágenes recortadas */
+        /* --- ESTILOS DE LOS FILTROS --- */
+        .filtros-container { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .btn-filtro { background: white; border: 2px solid #4a6fa5; color: #4a6fa5; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 0.9rem; }
+        .btn-filtro:hover, .btn-filtro.activo { background: #4a6fa5; color: white; }
+
+        /* --- ESTILOS DE LAS TARJETAS --- */
+        .productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); border: 1px solid #e1e8ed; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.2s ease; }
         .card:hover { transform: translateY(-5px); }
-        
-        /* ACÁ ESTÁ EL ARREGLO DE LA IMAGEN (object-fit: contain) */
         .card-img { width: 100%; height: 220px; object-fit: contain; padding: 15px; background-color: white; border-bottom: 1px solid #f0f0f0; }
-        
         .card-body { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
-        
         .badge { align-self: flex-start; background-color: #e8f0fe; color: #1a73e8; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; display: inline-block; }
         .card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #2c3e50; }
         .especie { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
@@ -30,10 +31,14 @@
         .btn-accion { background-color: #166088; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: background-color 0.2s; }
         .btn-accion:hover { background-color: #4a6fa5; }
         
+        /* --- ESTILOS DEL FOOTER --- */
+        .site-footer { background-color: #2c3e50; color: #ecf0f1; text-align: center; padding: 30px 20px; margin-top: 50px; font-size: 0.9rem; border-top: 5px solid #166088; }
+        .site-footer p { margin: 5px 0; }
+
         /* --- ESTILOS DEL CARRITO FLOTANTE --- */
-        .carrito-container { position: fixed; bottom: 25px; right: 25px; background-color: #2c3e50; color: white; padding: 15px 25px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold; display: flex; align-items: center; gap: 10px; z-index: 100; cursor: pointer; transition: 0.2s; }
-        .carrito-container:hover { background-color: #1a252f; transform: scale(1.05); }
-        .carrito-badge { background-color: #e74c3c; color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.9rem; }
+        .carrito-container { position: fixed; bottom: 25px; right: 25px; background-color: #e74c3c; color: white; padding: 15px 25px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold; display: flex; align-items: center; gap: 10px; z-index: 100; cursor: pointer; transition: 0.2s; }
+        .carrito-container:hover { background-color: #c0392b; transform: scale(1.05); }
+        .carrito-badge { background-color: white; color: #e74c3c; border-radius: 50%; padding: 2px 8px; font-size: 0.9rem; }
 
         /* --- ESTILOS DE LAS VENTANAS MODALES --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
@@ -60,27 +65,50 @@
         .btn-master { background-color: #eb001b; color: white; }
         .btn-mp { background-color: #009ee3; color: white; }
         .btn-pago:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* --- ESTILOS DE NOTIFICACIONES TOAST --- */
+        .toast-container-box { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: white; color: #333; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); font-weight: bold; display: flex; align-items: center; animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: translateX(100%); pointer-events: auto; }
+        .toast.success { border-left: 5px solid #2ecc71; }
+        .toast.error { border-left: 5px solid #e74c3c; }
+        @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOutToast { to { opacity: 0; transform: translateY(-10px); } }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🐾 PetMatch App</h1>
-        <p>E-Commerce Especializado en Productos y Servicios Personalizados</p>
+        <h1>🐾 LovePets</h1>
+        <p>E-Commerce Especializado en Productos y Servicios para tu Mascota</p>
     </header>
 
     <div class="container">
-        <h2 class="section-title">Catálogo de Artículos Disponible</h2>
+        <h2 class="section-title">Catálogo de Artículos y Servicios Disponible</h2>
+        
+        <div class="filtros-container">
+            <button class="btn-filtro activo" onclick="aplicarFiltro('Todos', this)">Todos</button>
+            <button class="btn-filtro" onclick="aplicarFiltro('Alimentos', this)">Alimentos</button>
+            <button class="btn-filtro" onclick="aplicarFiltro('Accesorios', this)">Accesorios</button>
+            <button class="btn-filtro" onclick="aplicarFiltro('Servicios', this)">Servicios</button>
+            <button class="btn-filtro" onclick="aplicarFiltro('Ropa', this)">Ropa</button>
+        </div>
+
         <div class="productos-grid" id="contenedor-catalogo"></div>
     </div>
 
-    <!-- Botón flotante para abrir el carrito -->
+    <footer class="site-footer">
+        <p><strong>🐾 LovePets</strong></p>
+        <p>© 2026 - Todos los derechos reservados.</p>
+        <p style="color: #95a5a6; font-size: 0.8rem; margin-top: 10px;">Proyecto académico - Diseño de Registro y Clave</p>
+    </footer>
+
+    <div id="toast-box" class="toast-container-box"></div>
+
     <div class="carrito-container" onclick="abrirModalCarrito()">
         <span>🛒 Mi Carrito</span>
         <span class="carrito-badge" id="contador-carrito">0</span>
     </div>
 
-    <!-- Modal 1: Selector de Especie -->
     <div class="modal-overlay" id="modal-especie">
         <div class="modal-content" style="text-align: center;">
             <button class="btn-cerrar" onclick="cerrarModal('modal-especie')">×</button>
@@ -93,7 +121,6 @@
         </div>
     </div>
 
-    <!-- Modal 2: Carrito de Compras -->
     <div class="modal-overlay" id="modal-carrito">
         <div class="modal-content">
             <button class="btn-cerrar" onclick="cerrarModal('modal-carrito')">×</button>
@@ -108,7 +135,6 @@
         </div>
     </div>
 
-    <!-- Modal 3: Pasarela de Pagos -->
     <div class="modal-overlay" id="modal-pago">
         <div class="modal-content">
             <button class="btn-cerrar" onclick="cerrarModal('modal-pago')">×</button>
@@ -123,7 +149,7 @@
     </div>
 
     <script>
-        // --- 1. ESTRUCTURA PRINCIPAL DEL REGISTRO (CON IMÁGENES LOCALES) ---
+        // --- 1. ESTRUCTURA PRINCIPAL DEL REGISTRO ---
         const inventarioPetMatch = [
             { codigo_articulo: 401, nombre_articulo: "Alimento Balanceado Premium (15 Kg)", categoria_articulo: "Alimentos", precio_unitario: 28500.00, stock_disponible: 34, requiere_turno: false, especie_mascota: "Universal", imagen: "Alimento.avif" },
             { codigo_articulo: 402, nombre_articulo: "Servicio de Peluquería y Baño Canino", categoria_articulo: "Servicios", precio_unitario: 9500.00, stock_disponible: 12, requiere_turno: true, especie_mascota: "Perro", imagen: "Baño.jpg" },
@@ -133,14 +159,48 @@
             { codigo_articulo: 406, nombre_articulo: "Buzo de Invierno Ajustable", categoria_articulo: "Ropa", precio_unitario: 15000.00, stock_disponible: 15, requiere_turno: false, especie_mascota: "Universal", imagen: "Buzos.webp" }
         ];
 
-        // --- 2. LÓGICA DEL CARRITO DINÁMICO ---
+        // --- 2. SISTEMA DE NOTIFICACIONES TOAST ---
+        function mostrarToast(mensaje, tipo = 'success') {
+            const container = document.getElementById('toast-box');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            const icono = tipo === 'success' ? '✅' : '⚠️';
+            toast.innerHTML = `<span style="font-size: 1.2rem; margin-right: 10px;">${icono}</span> ${mensaje}`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutToast 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- 3. LÓGICA DEL CATÁLOGO Y FILTROS ---
         let carrito = [];
         let articuloPendienteUniversal = null;
 
-        function inicializarCatalogo() {
+        function aplicarFiltro(categoria, btnElement) {
+            // Remueve la clase 'activo' de todos los botones y se la pone al seleccionado
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+            btnElement.classList.add('activo');
+            inicializarCatalogo(categoria);
+        }
+
+        function inicializarCatalogo(filtroActual = 'Todos') {
             const grid = document.getElementById('contenedor-catalogo');
+            grid.innerHTML = ''; // Limpiamos el catálogo actual
             
-            inventarioPetMatch.forEach(articulo => {
+            // Filtramos el array de registros según la categoría elegida
+            const productosMostrar = filtroActual === 'Todos' 
+                ? inventarioPetMatch 
+                : inventarioPetMatch.filter(articulo => articulo.categoria_articulo === filtroActual);
+            
+            if (productosMostrar.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: #7f8c8d;">No hay artículos en esta categoría aún.</p>';
+                return;
+            }
+
+            productosMostrar.forEach(articulo => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 const textoBoton = articulo.requiere_turno ? "📅 Reservar Turno" : "🛒 Añadir al Carrito";
@@ -166,6 +226,7 @@
             });
         }
 
+        // --- 4. LÓGICA DEL CARRITO DINÁMICO ---
         function iniciarAgregado(codigoBuscar) {
             const articuloBase = inventarioPetMatch.find(item => item.codigo_articulo === codigoBuscar);
             
@@ -194,8 +255,9 @@
             if (itemEnCarrito) {
                 if(itemEnCarrito.cantidad < articuloBase.stock_disponible) {
                     itemEnCarrito.cantidad++;
+                    mostrarToast("Cantidad actualizada en el carrito", "success");
                 } else {
-                    alert(`No hay más stock disponible de este ${articuloBase.requiere_turno ? 'servicio' : 'producto'}.`);
+                    mostrarToast("No hay más stock disponible", "error");
                     return;
                 }
             } else {
@@ -207,6 +269,7 @@
                     cantidad: 1,
                     requiere_turno: articuloBase.requiere_turno
                 });
+                mostrarToast("Agregado al carrito exitosamente", "success");
             }
             actualizarBadgeCarrito();
         }
@@ -217,8 +280,12 @@
                 const pkOriginal = carrito[index].codigo_articulo;
                 const articuloBase = inventarioPetMatch.find(item => item.codigo_articulo === pkOriginal);
                 
-                if (operacion === 'sumar' && carrito[index].cantidad < articuloBase.stock_disponible) {
-                    carrito[index].cantidad++;
+                if (operacion === 'sumar') {
+                    if (carrito[index].cantidad < articuloBase.stock_disponible) {
+                        carrito[index].cantidad++;
+                    } else {
+                        mostrarToast("Límite de stock alcanzado", "error");
+                    }
                 } else if (operacion === 'restar') {
                     carrito[index].cantidad--;
                     if (carrito[index].cantidad === 0) {
@@ -235,7 +302,7 @@
             document.getElementById('contador-carrito').innerText = totalItems;
         }
 
-        // --- 3. LÓGICA DE INTERFAZ (MODALES Y RENDERIZADO) ---
+        // --- 5. LÓGICA DE INTERFAZ (MODALES) ---
         function renderizarCarrito() {
             const contenedor = document.getElementById('contenido-carrito');
             const btnComprar = document.getElementById('btn-comprar');
@@ -255,7 +322,8 @@
                 const subtotal = item.precio_unitario * item.cantidad;
                 total += subtotal;
                 
-                const textoUnidad = item.requiere_turno ? (item.cantidad === 1 ? 'hora/turno' : 'horas/turnos') : 'unid.';
+                // ACÁ ESTÁ EL CAMBIO DE HORA/TURNO A SOLO HORA
+                const textoUnidad = item.requiere_turno ? (item.cantidad === 1 ? 'hora' : 'horas') : 'unid.';
 
                 contenedor.innerHTML += `
                     <div class="item-carrito">
@@ -295,14 +363,14 @@
         }
 
         function procesarPago(metodo) {
-            alert(`¡Pago exitoso procesado con ${metodo}! Gracias por tu compra en PetMatch.\n\nSe vaciará el carrito y se actualizará la base de datos.`);
+            mostrarToast(`¡Pago exitoso con ${metodo}! Gracias por tu compra en LovePets.`, 'success');
             carrito = [];
             actualizarBadgeCarrito();
             cerrarModal('modal-pago');
         }
 
         // Ejecución inicial al cargar el DOM
-        window.onload = inicializarCatalogo;
+        window.onload = () => inicializarCatalogo('Todos');
     </script>
 </body>
 </html>
