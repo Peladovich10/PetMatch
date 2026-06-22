@@ -149,14 +149,14 @@
     </div>
 
     <script>
-        // --- 1. ESTRUCTURA PRINCIPAL DEL REGISTRO ---
+        // --- 1. ESTRUCTURA PRINCIPAL DEL REGISTRO (CON VALORES DE STOCK ACTUALIZADOS) ---
         const inventarioPetMatch = [
-            { codigo_articulo: 401, nombre_articulo: "Alimento Balanceado Premium (15 Kg)", categoria_articulo: "Alimentos", precio_unitario: 28500.00, stock_disponible: 34, requiere_turno: false, especie_mascota: "Universal", imagen: "Alimento.avif" },
-            { codigo_articulo: 402, nombre_articulo: "Servicio de Peluquería y Baño Canino", categoria_articulo: "Servicios", precio_unitario: 9500.00, stock_disponible: 12, requiere_turno: true, especie_mascota: "Perro", imagen: "Baño.jpg" },
+            { codigo_articulo: 401, nombre_articulo: "Alimento Balanceado Premium (15 Kg)", categoria_articulo: "Alimentos", precio_unitario: 28500.00, stock_disponible: 15, requiere_turno: false, especie_mascota: "Universal", imagen: "Alimento.avif" },
+            { codigo_articulo: 402, nombre_articulo: "Servicio de Peluquería y Baño Canino", categoria_articulo: "Servicios", precio_unitario: 9500.00, stock_disponible: 4, requiere_turno: true, especie_mascota: "Perro", imagen: "Baño.jpg" },
             { codigo_articulo: 403, nombre_articulo: "Rascador Torre de 3 Niveles", categoria_articulo: "Accesorios", precio_unitario: 31200.50, stock_disponible: 8, requiere_turno: false, especie_mascota: "Gato", imagen: "Rascador.webp" },
-            { codigo_articulo: 404, nombre_articulo: "Paseo Recreativo Grupal (1 Hora)", categoria_articulo: "Servicios", precio_unitario: 4000.00, stock_disponible: 50, requiere_turno: true, especie_mascota: "Universal", imagen: "Paseo.jpg" },
-            { codigo_articulo: 405, nombre_articulo: "Cepillo Deslanador Ergonómico", categoria_articulo: "Accesorios", precio_unitario: 6500.00, stock_disponible: 20, requiere_turno: false, especie_mascota: "Universal", imagen: "deslanador-para-mascotas.webp" },
-            { codigo_articulo: 406, nombre_articulo: "Buzo de Invierno Ajustable", categoria_articulo: "Ropa", precio_unitario: 15000.00, stock_disponible: 15, requiere_turno: false, especie_mascota: "Universal", imagen: "Buzos.webp" }
+            { codigo_articulo: 404, nombre_articulo: "Paseo Recreativo Grupal (1 Hora)", categoria_articulo: "Servicios", precio_unitario: 4000.00, stock_disponible: 4, requiere_turno: true, especie_mascota: "Universal", imagen: "Paseo.jpg" },
+            { codigo_articulo: 405, nombre_articulo: "Cepillo Deslanador Ergonómico", categoria_articulo: "Accesorios", precio_unitario: 6500.00, stock_disponible: 5, requiere_turno: false, especie_mascota: "Universal", imagen: "deslanador-para-mascotas.webp" },
+            { codigo_articulo: 406, nombre_articulo: "Buzo de Invierno Ajustable", categoria_articulo: "Ropa", precio_unitario: 15000.00, stock_disponible: 11, requiere_turno: false, especie_mascota: "Universal", imagen: "Buzos.webp" }
         ];
 
         // --- 2. SISTEMA DE NOTIFICACIONES TOAST ---
@@ -180,7 +180,6 @@
         let articuloPendienteUniversal = null;
 
         function aplicarFiltro(categoria, btnElement) {
-            // Remueve la clase 'activo' de todos los botones y se la pone al seleccionado
             document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
             btnElement.classList.add('activo');
             inicializarCatalogo(categoria);
@@ -188,9 +187,8 @@
 
         function inicializarCatalogo(filtroActual = 'Todos') {
             const grid = document.getElementById('contenedor-catalogo');
-            grid.innerHTML = ''; // Limpiamos el catálogo actual
+            grid.innerHTML = ''; 
             
-            // Filtramos el array de registros según la categoría elegida
             const productosMostrar = filtroActual === 'Todos' 
                 ? inventarioPetMatch 
                 : inventarioPetMatch.filter(articulo => articulo.categoria_articulo === filtroActual);
@@ -322,8 +320,8 @@
                 const subtotal = item.precio_unitario * item.cantidad;
                 total += subtotal;
                 
-                // ACÁ ESTÁ EL CAMBIO DE HORA/TURNO A SOLO HORA
-                const textoUnidad = item.requiere_turno ? (item.cantidad === 1 ? 'hora' : 'horas') : 'unid.';
+                // AJUSTADO: AHORA INDICA "TURNO" O "TURNOS" EN VEZ DE HORAS
+                const textoUnidad = item.requiere_turno ? (item.cantidad === 1 ? 'turno' : 'turnos') : 'unid.';
 
                 contenedor.innerHTML += `
                     <div class="item-carrito">
@@ -333,7 +331,7 @@
                         </div>
                         <div class="controles-cantidad">
                             <button class="btn-cant" onclick="modificarCantidad('${item.id_carrito}', 'restar')">-</button>
-                            <span style="font-weight: bold; width: 60px; text-align: center;">${item.cantidad} ${textoUnidad}</span>
+                            <span style="font-weight: bold; width: 65px; text-align: center;">${item.cantidad} ${textoUnidad}</span>
                             <button class="btn-cant" onclick="modificarCantidad('${item.id_carrito}', 'sumar')">+</button>
                         </div>
                     </div>
